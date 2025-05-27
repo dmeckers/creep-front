@@ -65,7 +65,7 @@ const router = createRouter({
     routes
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
     const userData = localStorage.getItem(USER_DATA_LOCAL_STORAGE_KEY);
 
     const isAuthenticated = !!userData;

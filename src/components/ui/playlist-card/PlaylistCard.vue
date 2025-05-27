@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import type { Station } from "@/models/station.model";
-import { ref } from "vue";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardTitle,
 } from "@/components/ui/card";
-import { ListMusic, RadioTower, Pencil, Trash2, Disc } from "lucide-vue-next";
-import { Switch } from "@/components/ui/switch";
-import TextMarquee from "@/components/ui/text-marquee/TextMarquee.vue";
+import { Pencil, Trash2, Disc } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { RouteNames } from "@/constants/route-names";
 import {

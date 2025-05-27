@@ -4,7 +4,6 @@ import { useColorMode } from "@vueuse/core";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { House } from "lucide-vue-next";
-import { Button } from "@/components/ui/button";
 
 useColorMode();
 const route = useRoute();

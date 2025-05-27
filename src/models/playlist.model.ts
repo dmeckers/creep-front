@@ -1,5 +1,5 @@
 import type { Image } from "./image.model";
-import type { FlatPaginatedResponse, PaginatedResponse } from "./shared.models";
+import type { FlatPaginatedResponse } from "./shared.models";
 import type { Song } from "./song.model";
 
 export interface Playlist {

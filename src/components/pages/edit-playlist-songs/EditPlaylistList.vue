@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useGetResource } from "@/composables/useResource";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRoute } from "vue-router";
-import type { PaginatedPlaylistSongs, Playlist } from "@/models/playlist.model";
+import type { PaginatedPlaylistSongs } from "@/models/playlist.model";
 import { toast } from "vue-sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -26,12 +26,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import _axios from "@/services/axios";
 import {
-  calculateShowing,
   type GetPaginatedPayload,
-  type PaginatedResponse,
   type PaginationMeta,
 } from "@/models/shared.models";
-import type { Song } from "@/models/song.model";
 
 const { params } = useRoute();
 const { playFromStart, stop } = useHowler();
