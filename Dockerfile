@@ -5,6 +5,8 @@ WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
+RUN npm i -G @vue/cli
+RUN npm i -G @vue/cli-init@5.0.8
 
 COPY . .
 
