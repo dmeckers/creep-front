@@ -17,7 +17,7 @@ export function useTelegramAuth() {
     const fetchUser = async () => {
         const tgData = localStorage.getItem(INIT_DATA_SESSION_STORAGE_KEY);
 
-        const url = `/api/v1/${AUTH_TELEGRAM_URL}?${tgData}`;
+        const url = `/api/v1/${AUTH_TELEGRAM_URL}?${(window as any).Telegram?.WebApp?.initData || tgData}`;
 
         try {
 

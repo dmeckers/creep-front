@@ -8,7 +8,7 @@ import { RouteNames } from "@/constants/route-names";
 import Spinner from "@/components/ui/spinner/Spinner.vue";
 import type { TrackPlayedEventPayload } from "@/composables/useStationPlayback";
 import { useHowler } from "@/composables/useHowler";
-import { Play, Pause } from "lucide-vue-next";
+import { Play, Pause, Timer } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 
 const { params } = useRoute();
@@ -16,9 +16,12 @@ const stationName = params.stationName as string;
 
 const { listen: listenWs, unlisten } = useWs();
 const { current: currentTrack } = useStationQueue({ stationName });
-const { play, stop } = useHowler();
+const { play, stop, preload, syncNow } = useHowler();
+
 const isGettingFirstSong = ref(true);
 const isPlaying = ref(false);
+const isSyncing = ref(false);
+const nowPlaying = ref<TrackPlayedEventPayload | null>(null);
 
 const router = useRouter();
 let isListening = false;
@@ -35,26 +38,38 @@ const getCurrentPlayingTrack =
     return nowPlaying;
   };
 
+const sync = async () => {
+  if (isSyncing.value) return;
+  console.log("Syncing now...");
+
+  isSyncing.value = true;
+
+  if (!nowPlaying.value) throw new Error("No current track found");
+
+  const info = await syncNow(nowPlaying.value);
+
+  console.log("Resynced", info);
+  isSyncing.value = false;
+};
+
 const onPlayButtonClicked = async () => {
-  if (isPlaying.value === false) {
+  if (!isPlaying.value) {
     isPlaying.value = true;
 
-    const nowPlaying = await getCurrentPlayingTrack();
+    const current = await getCurrentPlayingTrack();
+    if (!current) return;
 
-    if (!nowPlaying) return;
+    nowPlaying.value = current;
+    await play(current);
 
-    await play(nowPlaying);
-
-    if (isListening) return;
-
-    listenWs("station." + stationName, "track.started", play);
-
-    isListening = true;
-
-    return;
-  }
-
-  if (isPlaying.value === true) {
+    if (!isListening) {
+      listenWs("station." + stationName, "track.started", (track) => {
+        nowPlaying.value = track;
+        play(track);
+      });
+      isListening = true;
+    }
+  } else {
     isPlaying.value = false;
     stop();
     if (isListening) {
@@ -64,16 +79,28 @@ const onPlayButtonClicked = async () => {
   }
 };
 
+// let interval: number | null = null;
+
 onMounted(async () => {
-  await getCurrentPlayingTrack();
+  const current = await getCurrentPlayingTrack();
 
   isGettingFirstSong.value = false;
+
+  if (!current) return;
+
+  await preload(current.track.code);
+
+  nowPlaying.value = current;
+
+//   interval = setInterval(() => nowPlaying.value && sync(), 5000);
 });
 
 onBeforeUnmount(() => {
   stop();
   isListening = false;
   unlisten("station." + stationName, "track.started");
+
+//   if (interval) clearInterval(interval);
 });
 </script>
 
@@ -85,10 +112,17 @@ onBeforeUnmount(() => {
     <Spinner :size="60" :color="'#ff1d5e'" />
   </div>
 
-  <div v-else class="w-full flex justify-center items-center h-[60vh]">
+  <div
+    v-else
+    class="w-full flex justify-center items-center h-[60vh] flex-col gap-4"
+  >
     <Button @click="onPlayButtonClicked">
       <template v-if="!isPlaying"> <Play class="w-4 h-4" /> Play </template>
       <template v-if="isPlaying"> <Pause class="w-4 h-4" /> Pause </template>
+    </Button>
+
+    <Button v-if="isPlaying" @click="sync" :disabled="isSyncing">
+      <Timer class="w-4 h-4" /> {{ isSyncing ? "Syncing..." : "Sync Now" }}
     </Button>
   </div>
 </template>
