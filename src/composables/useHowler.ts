@@ -18,18 +18,18 @@ export function useHowler() {
     };
 
     const syncClock = async (force = false): Promise<number> => {
-        // Используем кэш, если синхронизация была недавно
         if (!force && clockDelta !== null && Date.now() - lastSyncTime < SYNC_INTERVAL) {
             return clockDelta;
         }
 
         const measurements: { delta: number; rtt: number }[] = [];
 
-        // Делаем 3 замера для баланса скорости/точности
         for (let i = 0; i < 3; i++) {
             try {
                 const t0 = performance.now();
-                const res = await _axios.get<{ server_time: number }>("api/v1/sync", {
+                const res = await _axios.
+
+                get<{ server_time: number }>("api/v1/sync", {
                     headers: { 'Cache-Control': 'no-cache', 'X-Request-Sync': '1' }
                 });
                 const t3 = performance.now();
@@ -50,7 +50,6 @@ export function useHowler() {
             throw new Error("All sync attempts failed");
         }
 
-        // Берем медианное значение для избежания выбросов
         measurements.sort((a, b) => a.delta - b.delta);
         const newDelta = measurements[Math.floor(measurements.length / 2)].delta;
 
@@ -66,7 +65,7 @@ export function useHowler() {
         const startTime = new Date(startAt).getTime();
         const now = Date.now() + delta;
         const elapsed = Math.max(0, now - startTime);
-        
+
         return {
             position: Math.min(elapsed / 1000, duration),
             isExpired: elapsed >= duration * 1000,

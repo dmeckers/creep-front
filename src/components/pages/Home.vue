@@ -14,6 +14,17 @@ import { ref } from "vue";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import Spinner from "@/components/ui/spinner/Spinner.vue";
+import { Bell, Check } from 'lucide-vue-next'
+import { cn } from '@/utils'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Switch } from '@/components/ui/switch'
 
 const SEARCH_STATION_API_URL = "/api/v1/stations/search";
 
@@ -27,9 +38,13 @@ const goToUserStaion = () => {
 const stations = ref<Station[]>([]);
 const isSearching = ref(false);
 
+const lastSearchQuery = ref("");
+
 const debouncedSearch = useDebounceFn(async (value: Event) => {
   const input = value.target as HTMLInputElement;
   const query = input.value;
+
+  lastSearchQuery.value = query;
 
   if (!query || query.length < 1) {
     stations.value = [];
@@ -62,19 +77,72 @@ const goToStationStream = (stationName: string) => {
     path: `/stations/${stationName}/stream`,
   });
 };
+
+const notifications = [
+  {
+    title: "Your call has been confirmed.",
+    description: "1 hour ago",
+  },
+  {
+    title: "You have a new message!",
+    description: "1 hour ago",
+  },
+  {
+    title: "Your subscription is expiring soon!",
+    description: "2 hours ago",
+  },
+];
 </script>
 
 <template>
-  <div class="flex justify-center items-center gap-2 w-full">
-    <Avatar>
-      <AvatarImage src="https://github.com/unovue.png" alt="@unovue" />
-      <AvatarFallback>CN</AvatarFallback>
-    </Avatar>
+  <ScrollArea class="h-[80%] w-full rounded-md border p-4 mt-5">
+    <div v-if="!isSearching && lastSearchQuery === ''">
 
-    Hey {{ userStore.name }} 👋
-  </div>
+      <Card :class="cn('w-[380px]', $attrs.class ?? '')">
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+          <CardDescription>You have 3 unread messages.</CardDescription>
+        </CardHeader>
+        <CardContent class="grid gap-4">
+          <div class="flex items-center space-x-4 rounded-md border p-4">
+            <Bell />
+            <div class="flex-1 space-y-1">
+              <p class="text-sm font-medium leading-none">Push Notifications</p>
+              <p class="text-sm text-muted-foreground">
+                Send notifications to device.
+              </p>
+            </div>
+            <Switch />
+          </div>
+          <div>
+            <div
+              v-for="(notification, index) in notifications"
+              :key="index"
+              class="mb-4 grid grid-cols-[25px_minmax(0,1fr)] items-start pb-4 last:mb-0 last:pb-0"
+            >
+              <span
+                class="flex h-2 w-2 translate-y-1 rounded-full bg-sky-500"
+              />
+              <div class="space-y-1">
+                <p class="text-sm font-medium leading-none">
+                  {{ notification.title }}
+                </p>
+                <p class="text-sm text-muted-foreground">
+                  {{ notification.description }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button class="w-full">
+            <Check class="mr-2 h-4 w-4" /> Mark all as read
+          </Button>
+        </CardFooter>
+      </Card>
 
-  <ScrollArea class="h-[50vh] w-full rounded-md border p-4 mt-18">
+    </div>
+
     <div
       class="flex w-full justify-center h-[45vh] items-center"
       v-if="isSearching"

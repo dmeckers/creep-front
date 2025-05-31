@@ -4,6 +4,7 @@ import { useColorMode } from "@vueuse/core";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { House } from "lucide-vue-next";
+import { useUserStore } from "@/stores/userStore";
 
 useColorMode();
 const route = useRoute();
@@ -14,6 +15,8 @@ const displayRouteName = computed(
     ROUTE_NAME_MAP[route.name as keyof typeof ROUTE_NAME_MAP] ||
     ROUTE_NAME_MAP[RouteNames.HOME]
 );
+
+const userStore = useUserStore();
 </script>
 
 <template>
@@ -23,15 +26,21 @@ const displayRouteName = computed(
         <img src="@/assets/creep.png" />
         Creep Fm
       </div>
-      <div class="route-name my-3 flex items-center gap-3" v-if="isNotHomePage">
-        <House
-          :size="13"
-          class="text-muted-foreground"
-          @click="$router.push({ name: RouteNames.HOME })"
-        />
-        <span class="text-sm text-muted-foreground">
-          {{ displayRouteName }}
-        </span>
+
+      <div class="flex justify-between">
+        <div
+          class="route-name my-3 flex items-center gap-3"
+          v-if="isNotHomePage"
+        >
+          <House
+            :size="13"
+            class="text-muted-foreground"
+            @click="$router.push({ name: RouteNames.HOME })"
+          />
+          <span class="text-sm text-muted-foreground">
+            {{ displayRouteName }}
+          </span>
+        </div>
       </div>
     </header>
 
@@ -210,8 +219,8 @@ header {
 }
 
 .header-name img {
-  width: 25%;
-  height: 25%;
+  width: 10%;
+  height: 10%;
   margin-right: 0.5rem;
   filter: invert(100%);
 }
