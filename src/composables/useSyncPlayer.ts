@@ -1,13 +1,21 @@
 import _axios from "@/services/axios";
-import type { TrackPlayedEventPayload } from "./useStationPlayback";
 import { Howl } from "howler";
+
+export type TrackPlayedEventPayload = {
+    track: {
+        id: number;
+        code: string;
+        start_at: string;
+        duration: number;
+    }
+}
 
 // Глобальные переменные для синхронизации
 let clockDelta: number | null = Number(localStorage.getItem("clockDelta")) || null;
 let lastSyncTime = 0;
 const SYNC_INTERVAL = 10000; // 10 секунд
 
-export function useHowler() {
+export function useSyncPlayer() {
     const howls: Map<string, any> = new Map();
     let audioContext: AudioContext | null = null;
 
@@ -199,9 +207,6 @@ export function useHowler() {
         }
     };
 
-    const playFromStart = (_: any) => { }
-
-
     return {
         play: playWithPrecision,
         stop,
@@ -212,6 +217,5 @@ export function useHowler() {
         preload: async (_: string) => {
             // Предзагрузка не требуется для Web Audio API
         },
-        playFromStart,
     };
 }

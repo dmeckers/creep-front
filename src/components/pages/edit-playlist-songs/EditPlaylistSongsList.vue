@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useHowler } from "@/composables/useHowler";
+import { useHowler } from "@/composables/useSyncPlayer";
 
 type GetSongsPayload = {
   page: number;

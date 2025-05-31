@@ -7,7 +7,7 @@ import { useStationQueue } from "@/composables/useStationQueue";
 import { RouteNames } from "@/constants/route-names";
 import Spinner from "@/components/ui/spinner/Spinner.vue";
 import type { TrackPlayedEventPayload } from "@/composables/useStationPlayback";
-import { useHowler } from "@/composables/useHowler";
+import { useHowler } from "@/composables/useSyncPlayer";
 import { Play, Pause, Timer } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 
@@ -92,7 +92,7 @@ onMounted(async () => {
 
   nowPlaying.value = current;
 
-//   interval = setInterval(() => nowPlaying.value && sync(), 5000);
+  //   interval = setInterval(() => nowPlaying.value && sync(), 5000);
 });
 
 onBeforeUnmount(() => {
@@ -100,7 +100,7 @@ onBeforeUnmount(() => {
   isListening = false;
   unlisten("station." + stationName, "track.started");
 
-//   if (interval) clearInterval(interval);
+  //   if (interval) clearInterval(interval);
 });
 </script>
 

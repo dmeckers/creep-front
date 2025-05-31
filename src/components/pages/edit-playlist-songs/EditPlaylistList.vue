@@ -15,7 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-vue-next";
-import { useHowler } from "@/composables/useHowler";
+import { useHowler } from "@/composables/useSyncPlayer";
 import {
   DropdownMenu,
   DropdownMenuContent,

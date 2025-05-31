@@ -1,5 +1,5 @@
 import _axios from "@/services/axios"
-import type { TrackPlayedEventPayload } from "./useStationPlayback";
+import type { TrackPlayedEventPayload } from "./useSyncPlayer";
 
 export type QueuedTrack = {
     data: {

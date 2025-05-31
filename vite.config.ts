@@ -18,9 +18,7 @@ export default defineConfig({
   server: {
     allowedHosts: [
       'localhost',
-
-      //temp api tunnel host
-      'few-cooks-shop.loca.lt',
+      '11b2-89-254-133-189.ngrok-free.app',
     ],
   }
 })

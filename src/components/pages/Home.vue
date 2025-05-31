@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserStore } from "@/stores/userStore";
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input/Input.vue";
@@ -14,17 +13,7 @@ import { ref } from "vue";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import Spinner from "@/components/ui/spinner/Spinner.vue";
-import { Bell, Check } from 'lucide-vue-next'
-import { cn } from '@/utils'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Switch } from '@/components/ui/switch'
+import { Flame, Disc3, RadioTower, SmilePlus } from "lucide-vue-next";
 
 const SEARCH_STATION_API_URL = "/api/v1/stations/search";
 
@@ -80,71 +69,64 @@ const goToStationStream = (stationName: string) => {
 
 const notifications = [
   {
-    title: "Your call has been confirmed.",
-    description: "1 hour ago",
+    title: "Create your own station",
+    description: "Synchronized as much as possible",
+    icon: RadioTower,
   },
   {
-    title: "You have a new message!",
-    description: "1 hour ago",
+    title: "Create playlist",
+    description: "Feed it with links from YouTube, Spotify, SoundCloud, etc.",
+    icon: Disc3,
   },
   {
-    title: "Your subscription is expiring soon!",
-    description: "2 hours ago",
+    title: "Turn it on and listen",
+    description: "Below you can search for running stations",
+    icon: Flame,
+  },
+  {
+    title: "More features in future",
+    description: "We are working on it",
+    icon: SmilePlus,
   },
 ];
 </script>
 
 <template>
-  <ScrollArea class="h-[80%] w-full rounded-md border p-4 mt-5">
-    <div v-if="!isSearching && lastSearchQuery === ''">
+  <ScrollArea class="h-[85%] w-full rounded-md border p-4 mt-5">
+    <div
+      v-if="!isSearching && lastSearchQuery === ''"
+      class="flex flex-col items-center"
+      style="height: 100%"
+    >
+      <div class="self-start text-lg">
+        <span>How to use </span>
+      </div>
 
-      <Card :class="cn('w-[380px]', $attrs.class ?? '')">
-        <CardHeader>
-          <CardTitle>Notifications</CardTitle>
-          <CardDescription>You have 3 unread messages.</CardDescription>
-        </CardHeader>
-        <CardContent class="grid gap-4">
-          <div class="flex items-center space-x-4 rounded-md border p-4">
-            <Bell />
-            <div class="flex-1 space-y-1">
-              <p class="text-sm font-medium leading-none">Push Notifications</p>
-              <p class="text-sm text-muted-foreground">
-                Send notifications to device.
-              </p>
-            </div>
-            <Switch />
-          </div>
-          <div>
-            <div
-              v-for="(notification, index) in notifications"
-              :key="index"
-              class="mb-4 grid grid-cols-[25px_minmax(0,1fr)] items-start pb-4 last:mb-0 last:pb-0"
-            >
-              <span
-                class="flex h-2 w-2 translate-y-1 rounded-full bg-sky-500"
-              />
-              <div class="space-y-1">
-                <p class="text-sm font-medium leading-none">
-                  {{ notification.title }}
-                </p>
-                <p class="text-sm text-muted-foreground">
-                  {{ notification.description }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button class="w-full">
-            <Check class="mr-2 h-4 w-4" /> Mark all as read
-          </Button>
-        </CardFooter>
-      </Card>
+      <div class="flex flex-col justify-center flex-grow w-full h-full mt-8">
+        <div
+          v-for="(notification, index) in notifications"
+          :key="index"
+          class="mb-4 grid grid-cols-[25px_minmax(0,1fr)] items-start pb-4 last:mb-0 last:pb-0"
+        >
+          <component
+            :is="notification.icon"
+            class="h-5 w-5 text-muted-foreground"
+          />
 
+          <div class="space-y-1 text-left pl-2">
+            <p class="text-sm font-medium leading-none">
+              {{ notification.title }}
+            </p>
+            <p class="text-xs text-muted-foreground">
+              {{ notification.description }}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div
-      class="flex w-full justify-center h-[45vh] items-center"
+      class="flex w-full justify-center h-full items-center"
       v-if="isSearching"
     >
       <Spinner :size="60" :color="'#ff1d5e'" />
