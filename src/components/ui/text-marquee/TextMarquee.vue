@@ -18,6 +18,10 @@ defineProps({
     type: Number,
     default: 50,
   },
+  width: {
+    type: String,
+    default: "100%",
+  },
 });
 
 const shouldAnimate = ref(false);
@@ -38,6 +42,7 @@ onMounted(() => {
   <div
     class="marquee-container"
     :class="shouldAnimate ? 'fadeout-horizontal' : ''"
+    :style="{ width }"
     ref="containerRef"
   >
     <div
@@ -82,10 +87,10 @@ onMounted(() => {
 
 @keyframes marquee-animation {
   0% {
-    transform: translateX(100%);
+    transform: translateX(40%);
   }
   100% {
-    transform: translateX(-120%);
+    transform: translateX(-100%);
   }
 }
 </style>

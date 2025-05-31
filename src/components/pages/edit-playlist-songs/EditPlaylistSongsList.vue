@@ -23,6 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHowlerPlayer } from "@/composables/useHowlerPlayer";
+import TextMarquee from "@/components/ui/text-marquee/TextMarquee.vue";
 
 type GetSongsPayload = {
   page: number;
@@ -100,7 +101,6 @@ onMounted(async () => {
 });
 
 const playSong = (songId: number) => {
-  
   if (playingSongId.value != null) {
     stop();
 
@@ -139,10 +139,10 @@ onBeforeUnmount(() => stop());
 
   <Skeleton
     v-if="areSongsLoading && isSongsInitialLoad"
-    class="h-[50vh] w-full rounded-xl"
+    class="h-[53vh] w-full rounded-xl"
   />
 
-  <ScrollArea class="w-full rounded-md border p-4 h-[50vh]">
+  <ScrollArea class="w-full rounded-md border p-4 h-[53vh]">
     <template v-for="song in songsData?.data" :key="song.id">
       <!-- <SongListCard :song="song" /> -->
 
@@ -154,10 +154,10 @@ onBeforeUnmount(() => stop());
         }"
       >
         <div class="flex flex-col items-start">
-          <span>
-            {{ song.name }}
-          </span>
-          <span class="text-sm text-muted-foreground">
+          <TextMarquee :text="song.name" :speed="13" :width="'40vw'" />
+          <span
+            class="text-xs text-muted-foreground overflow-x-hidden text-ellipsis whitespace-nowrap"
+          >
             {{ song.artist }}
           </span>
         </div>

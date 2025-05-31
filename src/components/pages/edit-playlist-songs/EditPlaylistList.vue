@@ -29,6 +29,7 @@ import {
   type GetPaginatedPayload,
   type PaginationMeta,
 } from "@/models/shared.models";
+import TextMarquee from "@/components/ui/text-marquee/TextMarquee.vue";
 
 const { params } = useRoute();
 const { play, stop } = useHowlerPlayer();
@@ -133,16 +134,14 @@ onBeforeUnmount(() => stop());
 <template>
   <Skeleton
     v-if="isPlaylistLoading && isPlaylistInitialLoad"
-    class="h-[50vh] w-full rounded-xl"
+    class="h-[53vh] w-full rounded-xl"
   />
 
   <ScrollArea
     v-if="!isPlaylistInitialLoad && !isPlaylistLoading"
-    class="h-[50vh] w-full rounded-md border p-4"
+    class="h-[53vh] w-full rounded-md border p-4"
   >
     <template v-for="song in playlistData?.data.songs.data" :key="song.id">
-      <!-- <SongListCard :song="song" /> -->
-
       <div
         class="flex items-center justify-between p-2 hover:bg-muted rounded-md"
         :class="{
@@ -151,10 +150,10 @@ onBeforeUnmount(() => stop());
         }"
       >
         <div class="flex flex-col items-start">
-          <span>
-            {{ song.name }}
-          </span>
-          <span class="text-sm text-muted-foreground">
+          <TextMarquee :text="song.name" :speed="3" :width="'40vw'" />
+          <span
+            class="text-xs text-muted-foreground overflow-x-hidden text-ellipsis whitespace-nowrap"
+          >
             {{ song.artist }}
           </span>
         </div>

@@ -80,3 +80,38 @@ export function calculateShowing<T>(data: PaginatedResponse<T> | null) {
 
     return `Showing ${showing} of ${total} songs`;
 }
+
+export const enum SUPPORTED_MUSIC_PROVIDERS {
+    YOUTUBE = "youtube",
+    YOUTU_BE = "youtu.be",
+    VKONTATE = "vkontakte",
+    // SOUNDCLOUD = "soundcloud",
+    // SPOTIFY = "spotify",
+    // APPLE_MUSIC = "apple_music",
+    // DEEZER = "deezer",
+    // BANDCAMP = "bandcamp",
+    // TIDAL = "tidal",
+    // AMAZON_MUSIC = "amazon_music",
+    // PANDORA = "pandora",
+    // YOUTUBE_MUSIC = "youtube_music",
+}
+
+export const ALL_SUPPORTED_MUSIC_PROVIDERS = [
+    SUPPORTED_MUSIC_PROVIDERS.YOUTUBE,
+    SUPPORTED_MUSIC_PROVIDERS.VKONTATE,
+    SUPPORTED_MUSIC_PROVIDERS.YOUTU_BE,
+    // SUPPORTED_MUSIC_PROVIDERS.SOUNDCLOUD,
+    // SUPPORTED_MUSIC_PROVIDERS.SPOTIFY,
+    // SUPPORTED_MUSIC_PROVIDERS.APPLE_MUSIC,
+    // SUPPORTED_MUSIC_PROVIDERS.DEEZER,
+    // SUPPORTED_MUSIC_PROVIDERS.BANDCAMP,
+    // SUPPORTED_MUSIC_PROVIDERS.TIDAL,
+    // SUPPORTED_MUSIC_PROVIDERS.AMAZON_MUSIC,
+    // SUPPORTED_MUSIC_PROVIDERS.PANDORA,
+    // SUPPORTED_MUSIC_PROVIDERS.YOUTUBE_MUSIC,
+]
+
+export const enum SINGLE_OPERATION_EVENTS {
+    URL_SONG_DOWNLOAD_SUCCEEDED = "url.song.download.succeeded",
+    URL_SONG_DOWNLOAD_FAILED = "url.song.download.failed",
+}

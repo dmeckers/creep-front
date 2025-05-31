@@ -1,88 +1,99 @@
 <script lang="ts" setup>
-import SongListCard from "@/components/ui/song-list-card/SongListCard.vue";
-import { Plus } from "lucide-vue-next";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import _axios from "@/services/axios";
-import { usePostResource } from "@/composables/useResource";
-import { TypedFormData } from "@/lib/typed-form-data";
-import getArtistTitle from "get-artist-title";
-import { toast } from "vue-sonner";
+import UploadSongButton, {
+  type SongUrlWithProvider,
+} from "@/components/pages/edit-playlist-songs/UploadSongButton.vue";
 import EditPlaylistSongsList from "@/components/pages/edit-playlist-songs/EditPlaylistSongsList.vue";
 import EditPlaylistList from "@/components/pages/edit-playlist-songs/EditPlaylistList.vue";
-import type { Song } from "@/models/song.model";
+import { usePluralize } from "@/composables/usePluralize";
+import { useWs } from "@/composables/useWs";
+import { SINGLE_OPERATION_EVENTS } from "@/models/shared.models";
+import { toast } from "vue-sonner";
+import { useUserStore } from "@/stores/userStore";
 
-type UploadSongPayload = {
-  file: File;
-  code: string;
-  name: string;
-  artist: string;
-  playlistId: string;
+const uploadingSongs = ref<SongUrlWithProvider[]>([]);
+const { pluralize } = usePluralize();
+const { listen, unlisten } = useWs();
+const userStore = useUserStore();
+
+const songsComponentRef = ref<InstanceType<
+  typeof EditPlaylistSongsList
+> | null>(null);
+
+const handleQueueSongUpload = async (song: SongUrlWithProvider) => {
+  uploadingSongs.value.push(song);
 };
 
-const fileInput = ref<HTMLInputElement | null>(null);
-const songsC = ref<InstanceType<typeof SongListCard> | null>(null);
+const handleRemoveSongFromQueue = (song: SongUrlWithProvider) => {
 
-const {
-  postData: uploadSong,
-  error: hasFailedUploadSong,
-  isLoading: isUploadingSong,
-} = usePostResource<Song[], UploadSongPayload>("api/v1/songs");
+  const index = uploadingSongs.value.findIndex((s) => s.url === song.url);
 
-const sanitizeFileName = (fileName: string): string => {
-  return fileName
-    .replace(/\.[^/.]+$/, "") // Remove file extension
-    .replace(/[^a-zA-Z0-9]/g, "") // Remove special chars and spaces
-    .toLowerCase(); // Convert to lowercase
-};
-
-const handleFileChange = async (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const files = target.files;
-
-  if (files && files.length > 0) {
-    const file = files[0];
-
-    const formData = new TypedFormData<UploadSongPayload>();
-
-    const [, title] = getArtistTitle(file.name) ?? [null, file.name];
-
-    formData.append("file", file);
-    formData.append("name", title);
-    formData.append("code", sanitizeFileName(title));
-
-    await uploadSong(formData);
-
-    await (songsC.value as any)?.getSongs();
+  if (index !== -1) {
+    uploadingSongs.value.splice(index, 1);
   }
 };
 
-const triggerFileInput: () => void = () => fileInput.value?.click();
+const uploadingCountMsg = computed(() => {
+  const count = uploadingSongs.value.length;
 
-watch([hasFailedUploadSong], ([upload]) => {
-  if (upload) {
-    return toast.error("Failed to upload song");
-  }
+  return count ? `Uploading ${count} ${pluralize(count, "song")}...` : "";
+});
+
+const handleTriggerFetchSongs = () => songsComponentRef.value?.getSongs();
+
+const userId = userStore.id;
+const channel = `user.${userId}.upload-progress`;
+
+onMounted(() => {
+  listen(
+    channel,
+    SINGLE_OPERATION_EVENTS.URL_SONG_DOWNLOAD_FAILED,
+    (payload) => {
+      handleRemoveSongFromQueue({
+        url: payload.url,
+        provider: payload.provider,
+      });
+
+      toast.error(`Failed to download song from ${payload.provider}: ${payload.url}`, {
+        description: payload.error,
+      });
+    }
+  );
+
+  listen(
+    channel,
+    SINGLE_OPERATION_EVENTS.URL_SONG_DOWNLOAD_SUCCEEDED,
+    (payload) => {
+      handleRemoveSongFromQueue({
+        url: payload.url,
+        provider: payload.provider,
+      });
+
+      toast.success(`Successfully downloaded song from ${payload.provider}: ${payload.url}`);
+    }
+  );
+});
+
+onUnmounted(() => {
+  unlisten(channel, SINGLE_OPERATION_EVENTS.URL_SONG_DOWNLOAD_FAILED);
+  unlisten(channel, SINGLE_OPERATION_EVENTS.URL_SONG_DOWNLOAD_SUCCEEDED);
 });
 </script>
 
 <template>
-  <input
-    type="file"
-    id="file"
-    class="hidden"
-    ref="fileInput"
-    accept="audio/*"
-    @change="handleFileChange"
+  <UploadSongButton
+    @queue-song-upload="handleQueueSongUpload"
+    @url-upload-failed="handleRemoveSongFromQueue"
+    @file-uploaded="handleTriggerFetchSongs"
   />
-  <Button
-    @click="triggerFileInput"
-    :disabled="isUploadingSong"
-    class="my-2 flex justify-self-end align-items-center"
-  >
-    Add song <Plus />
-  </Button>
+
+  <div v-if="!!uploadingSongs.length" class="w-full text-left">
+    <span class="text-sm text-muted-foreground">
+      {{ uploadingCountMsg }}
+    </span>
+  </div>
 
   <Tabs default-value="playlist" class="w-full mt-5">
     <TabsList class="w-full">
@@ -91,7 +102,7 @@ watch([hasFailedUploadSong], ([upload]) => {
     </TabsList>
 
     <TabsContent value="songs">
-      <EditPlaylistSongsList ref="songsC" />
+      <EditPlaylistSongsList ref="songsComponentRef" />
     </TabsContent>
 
     <TabsContent value="playlist">
