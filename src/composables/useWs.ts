@@ -33,12 +33,22 @@ export function useWs() {
         const echoChannel = channel(channelName);
 
         echoChannel.listen(`.${event}`, callback);
+        echoChannel.listen(`${event}`, callback);
     }
 
     const unlisten = (channelName: string, event: string) => {
         const echoChannel = channel(channelName);
 
         echoChannel.stopListening(`.${event}`);
+        echoChannel.stopListening(`${event}`);
+    }
+
+    const dispose = () => {
+        if (echoInstance) {
+            echoInstance.disconnect();
+            echoInstance = null;
+            isConnected.value = false;
+        }
     }
 
     return {
@@ -47,6 +57,7 @@ export function useWs() {
         getEcho,
         channel,
         listen,
-        unlisten
+        unlisten,
+        dispose
     };
 }

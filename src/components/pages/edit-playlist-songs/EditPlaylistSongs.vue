@@ -15,7 +15,7 @@ import { useUserStore } from "@/stores/userStore";
 
 const uploadingSongs = ref<SongUrlWithProvider[]>([]);
 const { pluralize } = usePluralize();
-const { listen, unlisten } = useWs();
+const { listen, unlisten , dispose } = useWs();
 const userStore = useUserStore();
 
 const songsComponentRef = ref<InstanceType<
@@ -79,6 +79,7 @@ onMounted(() => {
 onUnmounted(() => {
   unlisten(channel, SINGLE_OPERATION_EVENTS.URL_SONG_DOWNLOAD_FAILED);
   unlisten(channel, SINGLE_OPERATION_EVENTS.URL_SONG_DOWNLOAD_SUCCEEDED);
+  dispose();
 });
 </script>
 

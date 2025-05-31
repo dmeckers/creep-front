@@ -6,14 +6,17 @@ import _axios from "@/services/axios";
 import { useStationQueue } from "@/composables/useStationQueue";
 import { RouteNames } from "@/constants/route-names";
 import Spinner from "@/components/ui/spinner/Spinner.vue";
-import { useSyncPlayer, type TrackPlayedEventPayload } from "@/composables/useSyncPlayer";
+import {
+  useSyncPlayer,
+  type TrackPlayedEventPayload,
+} from "@/composables/useSyncPlayer";
 import { Play, Pause, Timer } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 
 const { params } = useRoute();
 const stationName = params.stationName as string;
 
-const { listen: listenWs, unlisten } = useWs();
+const { listen, unlisten } = useWs();
 const { current: currentTrack } = useStationQueue({ stationName });
 const { play, stop, preload, syncNow } = useSyncPlayer();
 
@@ -62,9 +65,9 @@ const onPlayButtonClicked = async () => {
     await play(current);
 
     if (!isListening) {
-      listenWs("station." + stationName, "track.started", (track) => {
+      listen("station." + stationName.trim(), "track.started", async (track) => {
         nowPlaying.value = track;
-        play(track);
+        await play(track);
       });
       isListening = true;
     }
@@ -87,8 +90,6 @@ onMounted(async () => {
 
   if (!current) return;
 
-  await preload(current.track.code);
-
   nowPlaying.value = current;
 
   //   interval = setInterval(() => nowPlaying.value && sync(), 5000);
@@ -98,8 +99,6 @@ onBeforeUnmount(() => {
   stop();
   isListening = false;
   unlisten("station." + stationName, "track.started");
-
-  //   if (interval) clearInterval(interval);
 });
 </script>
 

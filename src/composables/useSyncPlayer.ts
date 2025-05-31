@@ -37,9 +37,9 @@ export function useSyncPlayer() {
                 const t0 = performance.now();
                 const res = await _axios.
 
-                get<{ server_time: number }>("api/v1/sync", {
-                    headers: { 'Cache-Control': 'no-cache', 'X-Request-Sync': '1' }
-                });
+                    get<{ server_time: number }>("api/v1/sync", {
+                        headers: { 'Cache-Control': 'no-cache', 'X-Request-Sync': '1' }
+                    });
                 const t3 = performance.now();
 
                 const rtt = t3 - t0;
@@ -77,7 +77,8 @@ export function useSyncPlayer() {
         return {
             position: Math.min(elapsed / 1000, duration),
             isExpired: elapsed >= duration * 1000,
-            serverTime: now
+            serverTime: now,
+            elapsed
         };
     };
 
@@ -89,11 +90,14 @@ export function useSyncPlayer() {
         const { position, isExpired } = await getCurrentPosition(start_at, duration);
 
         if (isExpired) {
+            console.log('OMG BRUH NOT AGAIN');
+            
             stop(code);
             return;
         }
 
         // Останавливаем предыдущие треки
+        debugger;
         stop();
 
         try {
