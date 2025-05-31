@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useHowler } from "@/composables/useSyncPlayer";
+import { useHowlerPlayer } from "@/composables/useHowlerPlayer";
 
 type GetSongsPayload = {
   page: number;
@@ -44,7 +44,7 @@ const {
 } = useGetResource<PaginatedResponse<Song>, GetSongsPayload>("api/v1/songs");
 
 const { params } = useRoute();
-const { playFromStart, stop } = useHowler();
+const { play, stop } = useHowlerPlayer();
 
 const paginationMessage = computed(() => calculateShowing(songsData.value));
 
@@ -100,15 +100,21 @@ onMounted(async () => {
 });
 
 const playSong = (songId: number) => {
+  
   if (playingSongId.value != null) {
     stop();
+
+    if (playingSongId.value === songId) {
+      playingSongId.value = null;
+      return;
+    }
   }
 
   const song = songsData.value?.data.find((s) => s.id === songId);
 
   playingSongId.value = songId;
 
-  playFromStart(song?.code ?? "");
+  play(song?.code ?? "");
 };
 
 defineExpose({ getSongs });

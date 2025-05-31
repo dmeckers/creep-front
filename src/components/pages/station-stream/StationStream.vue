@@ -6,8 +6,7 @@ import _axios from "@/services/axios";
 import { useStationQueue } from "@/composables/useStationQueue";
 import { RouteNames } from "@/constants/route-names";
 import Spinner from "@/components/ui/spinner/Spinner.vue";
-import type { TrackPlayedEventPayload } from "@/composables/useStationPlayback";
-import { useHowler } from "@/composables/useSyncPlayer";
+import { useSyncPlayer, type TrackPlayedEventPayload } from "@/composables/useSyncPlayer";
 import { Play, Pause, Timer } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 
@@ -16,7 +15,7 @@ const stationName = params.stationName as string;
 
 const { listen: listenWs, unlisten } = useWs();
 const { current: currentTrack } = useStationQueue({ stationName });
-const { play, stop, preload, syncNow } = useHowler();
+const { play, stop, preload, syncNow } = useSyncPlayer();
 
 const isGettingFirstSong = ref(true);
 const isPlaying = ref(false);

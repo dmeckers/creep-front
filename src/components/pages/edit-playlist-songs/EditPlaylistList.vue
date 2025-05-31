@@ -15,7 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-vue-next";
-import { useHowler } from "@/composables/useSyncPlayer";
+import { useHowlerPlayer } from "@/composables/useHowlerPlayer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +31,7 @@ import {
 } from "@/models/shared.models";
 
 const { params } = useRoute();
-const { playFromStart, stop } = useHowler();
+const { play, stop } = useHowlerPlayer();
 const playingSongId = ref<number | null>(null);
 const busySongId = ref<number | null>(null);
 
@@ -60,7 +60,7 @@ const playSong = (songId: number) => {
 
   playingSongId.value = songId;
 
-  playFromStart(song?.code ?? "");
+  play(song?.code ?? "");
 };
 
 const paginationMessage = computed(() => {
