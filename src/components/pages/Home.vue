@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useUserStore } from "@/stores/userStore";
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input/Input.vue";
 import { useRouter } from "vue-router";
@@ -17,7 +16,6 @@ import { Flame, Disc3, RadioTower, SmilePlus } from "lucide-vue-next";
 
 const SEARCH_STATION_API_URL = "/api/v1/stations/search";
 
-const userStore = useUserStore();
 const router = useRouter();
 
 const goToUserStaion = () => {

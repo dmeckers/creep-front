@@ -4,7 +4,6 @@ import { useColorMode } from "@vueuse/core";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { House } from "lucide-vue-next";
-import { useUserStore } from "@/stores/userStore";
 
 useColorMode();
 const route = useRoute();
@@ -16,7 +15,6 @@ const displayRouteName = computed(
     ROUTE_NAME_MAP[RouteNames.HOME]
 );
 
-const userStore = useUserStore();
 </script>
 
 <template>
