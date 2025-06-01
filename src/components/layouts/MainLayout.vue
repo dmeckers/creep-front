@@ -4,12 +4,10 @@ import { useColorMode } from "@vueuse/core";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { House } from "lucide-vue-next";
-import { useUserStore } from "@/stores/userStore";
 
 useColorMode();
 const route = useRoute();
 const isNotHomePage = computed(() => route.name !== RouteNames.HOME);
-const userStore = useUserStore();
 
 const displayRouteName = computed(
   () =>
@@ -22,7 +20,7 @@ const displayRouteName = computed(
   <div class="main-layout">
     <header class="header">
       <div class="header-name">
-        <img :src="userStore.photo_url || '@/assets/creep.png'" />
+        <img src="@/assets/creep.png" />
         Creep Fm
       </div>
 
