@@ -2,7 +2,7 @@ import type { Station } from "@/models/station.model";
 import { defineStore } from "pinia";
 
 export const useUserStationsStore = defineStore("userStations", {
-    state: () => ({ stations: [] as Array<Station> }),
+    state: () => ({ stations: [] as Array<Station & { isSpinningUp?: boolean }> }),
     actions: {
         toggleStationIsLive(station: Station) {
             this.stations = this.stations.map(
@@ -22,5 +22,12 @@ export const useUserStationsStore = defineStore("userStations", {
 
             this.stations = this.stations.filter(s => s.id !== stationId);
         },
+        toggleIsSpinningUp(station: Station) {
+            this.stations = this.stations.map(
+                s => s.id === station.id
+                    ? { ...s, isSpinningUp: !s.isSpinningUp }
+                    : s
+            );
+        }
     }
 });

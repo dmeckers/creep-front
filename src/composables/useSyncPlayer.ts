@@ -4,9 +4,15 @@ import { Howl } from "howler";
 export type TrackPlayedEventPayload = {
     track: {
         id: number;
-        code: string;
         start_at: string;
-        duration: number;
+        song: {
+            id: number;
+            name: string;
+            artist: string;
+            fileUrl: string;
+            code: string;
+            duration: number;
+        };
     }
 }
 
@@ -86,12 +92,12 @@ export function useSyncPlayer() {
         initAudioContext();
         if (!audioContext) throw new Error("AudioContext not available");
 
-        const { code, start_at, duration } = track;
+        const { start_at, song: { code, duration } } = track;
         const { position, isExpired } = await getCurrentPosition(start_at, duration);
 
         if (isExpired) {
             console.log('OMG BRUH NOT AGAIN');
-            
+
             stop(code);
             return;
         }
@@ -156,7 +162,8 @@ export function useSyncPlayer() {
     });
 
     const playWithHowler = async ({ track }: TrackPlayedEventPayload) => {
-        const { code, start_at, duration } = track;
+        const { start_at, song: { code, duration } } = track;
+
         const { position, isExpired } = await getCurrentPosition(start_at, duration);
 
         if (isExpired) {
@@ -216,7 +223,7 @@ export function useSyncPlayer() {
         stop,
         syncNow: async (payload: TrackPlayedEventPayload) => {
             await syncClock(true);
-            return getCurrentPosition(payload.track.start_at, payload.track.duration);
+            return getCurrentPosition(payload.track.start_at, payload.track.song.duration);
         },
         preload: async (_: string) => {
             // Предзагрузка не требуется для Web Audio API

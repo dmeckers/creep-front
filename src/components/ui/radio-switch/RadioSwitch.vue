@@ -11,12 +11,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { Station } from "@/models/station.model";
 import _axios from "@/services/axios";
-import { useUserStationsStore } from "@/stores/userStationsStore";
 import { ref } from "vue";
 import { toast } from "vue-sonner";
 
 const props = defineProps<{ station: Station }>();
-const stationStore = useUserStationsStore();
 
 const [showAlertDialog, pendingSwitch] = [ref(false), ref(false)];
 
@@ -45,7 +43,6 @@ const handleClick = async (event: MouseEvent) => {
     }
 
     await spinUpStation(props.station.id);
-    stationStore.toggleStationIsLive(props.station);
   }
 };
 
@@ -54,7 +51,6 @@ const confirmChange = async () => {
 
   if (pendingSwitch.value) {
     await spinDownStaion(props.station.id);
-    stationStore.toggleStationIsLive(props.station);
     pendingSwitch.value = false;
   }
 };
@@ -67,6 +63,8 @@ const cancelChange = () => {
 const spinDownStaion = async (stationId: number) => {
   try {
     await _axios.post(`api/v1/stations/${stationId}/spin/down`, { stationId });
+
+    emit("switch-toggled", false);
   } catch (error) {
     toast.error(
       "An error occurred while trying to spin down the station. Please try again."
@@ -77,12 +75,18 @@ const spinDownStaion = async (stationId: number) => {
 const spinUpStation = async (stationId: number) => {
   try {
     await _axios.post(`api/v1/stations/${stationId}/spin/up`, { stationId });
+
+    emit("switch-toggled", true);
   } catch (error) {
     toast.error(
       "An error occurred while trying to spin up the station. Please try again."
     );
   }
 };
+
+const emit = defineEmits<{
+  (e: "switch-toggled", isLive: boolean): void;
+}>();
 </script>
 
 <template>

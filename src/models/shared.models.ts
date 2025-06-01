@@ -115,3 +115,7 @@ export const enum SINGLE_OPERATION_EVENTS {
     URL_SONG_DOWNLOAD_SUCCEEDED = "url.song.download.succeeded",
     URL_SONG_DOWNLOAD_FAILED = "url.song.download.failed",
 }
+
+export type ApiResponse<T> = {
+    data: T;
+}

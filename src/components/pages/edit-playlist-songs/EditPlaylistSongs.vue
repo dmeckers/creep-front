@@ -41,7 +41,7 @@ const uploadingCountMsg = computed(() => {
   return count ? `Uploading ${count} ${pluralize(count, "song")}...` : "";
 });
 
-const handleTriggerFetchSongs = () => songsComponentRef.value?.getSongs();
+const handleTriggerFetchSongs = () => songsComponentRef.value?.fetchSongs();
 
 const userId = userStore.id;
 const channel = `user.${userId}.upload-progress`;

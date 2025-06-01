@@ -117,7 +117,16 @@ const playSong = (songId: number) => {
   play(song?.code ?? "");
 };
 
-defineExpose({ getSongs });
+const fetchSongs = async () => {
+  await getSongs({
+    page: 1,
+    page_size: 10,
+    name: songNameSearchQuery.value,
+    exclude_playlist_id: Number(params.playlistId),
+  });
+};
+
+defineExpose({ fetchSongs });
 
 onBeforeUnmount(() => stop());
 </script>

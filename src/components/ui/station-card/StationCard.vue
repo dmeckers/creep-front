@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Station } from "@/models/station.model";
-import { computed, ref } from "vue";
+import { computed, onUnmounted, ref } from "vue";
 import {
   Card,
   CardContent,
@@ -26,6 +26,8 @@ import {
 import _axios from "@/services/axios";
 import { toast } from "vue-sonner";
 import { useUserStationsStore } from "@/stores/userStationsStore";
+import { useRouter } from "vue-router";
+import { useWs } from "@/composables/useWs";
 
 const STATION_URL = "/api/v1/stations";
 
@@ -33,8 +35,18 @@ const props = defineProps<{ station: Station }>();
 
 const expandedDescriptions = ref<Record<string, boolean>>({});
 const isDeleting = ref(false);
+const { listen, unlisten } = useWs();
 
 const store = useUserStationsStore();
+const station = computed(
+  () => store.stations.find((s) => s.id === props.station.id)!
+);
+
+const router = useRouter();
+
+const canNavigateToStation = computed(
+  () => store.stations[0]?.is_live || false
+);
 
 const toggleDescription = (stationId: string | number) => {
   expandedDescriptions.value[stationId] =
@@ -60,10 +72,44 @@ const handleStationDelete = async (stationId: number) => {
     isDeleting.value = false;
   }
 };
+
+const goToStationStream = (stationName: string) => [
+  router.push({
+    path: `/stations/${stationName}/stream`,
+  }),
+];
+
+onUnmounted(() => {
+  const station = store.stations[0];
+
+  if (!station) return;
+
+  unlisten(`station.${station.mount_point}`, "station.up");
+});
+
+const handleStationStatusSwitch = (isLive: boolean) => {
+  if (!station) return;
+
+  if (isLive) {
+    store.toggleIsSpinningUp(station.value);
+
+    listen(`station.${station.value.mount_point}`, "station.up", () => {
+      store.toggleIsSpinningUp(station.value);
+      store.toggleStationIsLive(props.station);
+    });
+  } else {
+    store.toggleStationIsLive(props.station);
+    unlisten(`station.${station.value.mount_point}`, "station.up");
+  }
+};
 </script>
 
 <template>
-  <Card :key="station.id" class="mb-4" :class="{ 'opacity-50': isDeleting }">
+  <Card
+    :key="station.id"
+    class="mb-4"
+    :class="{ 'opacity-50': isDeleting || station.isSpinningUp }"
+  >
     <div class="flex items-center justify-end gap-3 mx-2">
       <Button
         variant="outline"
@@ -136,7 +182,10 @@ const handleStationDelete = async (stationId: number) => {
           </p>
         </div>
 
-        <RadioSwitch :station="station" />
+        <RadioSwitch
+          :station="station"
+          @switch-toggled="handleStationStatusSwitch"
+        />
       </div>
 
       <div
@@ -160,6 +209,17 @@ const handleStationDelete = async (stationId: number) => {
           </p>
         </div>
       </div>
+
+      <Button
+        v-if="canNavigateToStation"
+        variant="default"
+        class="mt-6"
+        size="sm"
+      >
+        <span @click="goToStationStream(station.mount_point)">
+          Go to station
+        </span>
+      </Button>
     </CardContent>
   </Card>
 </template>

@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@foobar404/wave": "^2.0.5",
     "@radix-ui/react-alert-dialog": "^1.1.11",
     "@tailwindcss/vite": "^4.1.4",
     "@tanstack/vue-table": "^8.21.3",
