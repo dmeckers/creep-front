@@ -3,7 +3,8 @@ import { ROUTE_NAME_MAP, RouteNames } from "@/constants/route-names";
 import { useColorMode } from "@vueuse/core";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { House } from "lucide-vue-next";
+import { House, HouseIcon } from "lucide-vue-next";
+import { Button } from "@/components/ui/button";
 
 useColorMode();
 const route = useRoute();
@@ -24,20 +25,19 @@ const displayRouteName = computed(
         Creep Fm
       </div>
 
-      <div class="flex justify-between">
+      <div class="flex justify-between w-[100%]">
         <div
           class="route-name my-3 flex items-center gap-3"
           v-if="isNotHomePage"
         >
-          <House
-            :size="13"
-            class="text-muted-foreground"
-            @click="$router.push({ name: RouteNames.HOME })"
-          />
           <span class="text-sm text-muted-foreground">
             {{ displayRouteName }}
           </span>
         </div>
+
+        <Button size="icon" @click="$router.push({ name: RouteNames.HOME })">
+          <House class="w-6 h-6" color="white" />
+        </Button>
       </div>
     </header>
 
