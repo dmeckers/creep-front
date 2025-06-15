@@ -3,7 +3,7 @@ import { ROUTE_NAME_MAP, RouteNames } from "@/constants/route-names";
 import { useColorMode } from "@vueuse/core";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { House, HouseIcon } from "lucide-vue-next";
+import { House } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 
 useColorMode();
