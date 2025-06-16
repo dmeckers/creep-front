@@ -90,7 +90,7 @@ const notifications = [
 </script>
 
 <template>
-  <ScrollArea class="h-[80%] w-full rounded-md border p-4 mt-5">
+  <ScrollArea class="h-[85%] w-full rounded-md border p-4 mt-5">
     <div
       v-if="!isSearching && lastSearchQuery === ''"
       class="flex flex-col items-center"
