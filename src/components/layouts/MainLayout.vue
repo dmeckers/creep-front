@@ -32,7 +32,11 @@ const displayRouteName = computed(
           </span>
         </div>
 
-        <Button size="icon" @click="$router.push({ name: RouteNames.HOME })">
+        <Button
+          size="icon"
+          @click="$router.push({ name: RouteNames.HOME })"
+          v-if="isNotHomePage"
+        >
           <House class="w-6 h-6" color="white" />
         </Button>
       </div>
