@@ -25,11 +25,8 @@ const displayRouteName = computed(
         Creep Fm
       </div>
 
-      <div class="flex justify-between w-[100%]">
-        <div
-          class="route-name my-3 flex items-center gap-3"
-          v-if="isNotHomePage"
-        >
+      <div class="flex justify-between w-[90%]">
+        <div class="route-name my-3" v-if="isNotHomePage">
           <span class="text-sm text-muted-foreground">
             {{ displayRouteName }}
           </span>
