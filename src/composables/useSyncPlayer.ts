@@ -24,6 +24,7 @@ const SYNC_INTERVAL = 10000; // 10 секунд
 export function useSyncPlayer() {
     const howls: Map<string, any> = new Map();
     let audioContext: AudioContext | null = null;
+    let currentAudio : Response | null = null;
 
     const initAudioContext = () => {
         if (!audioContext) {
@@ -108,10 +109,10 @@ export function useSyncPlayer() {
 
         try {
             // Загружаем аудио через ArrayBuffer для точного контроля
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/songs/${code}/stream`, {
+            currentAudio ??= await fetch(`${import.meta.env.VITE_API_URL}/songs/${code}/stream`, {
                 credentials: "include"
             });
-            const arrayBuffer = await response.arrayBuffer();
+            const arrayBuffer = await currentAudio.arrayBuffer();
             const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
             // Точный расчет времени старта
@@ -141,12 +142,20 @@ export function useSyncPlayer() {
 
             source.start(startTime, position % duration);
             howls.set(code, createHowlControl(source));
+
+            currentAudio = null;
         } catch (error) {
             console.error("Precision playback failed:", error);
             // Fallback к Howler.js
             await playWithHowler({ track });
         }
     };
+
+    const preload = async (code: string) => {
+        currentAudio ??= await fetch(`${import.meta.env.VITE_API_URL}/songs/${code}/stream`, {
+            credentials: "include"
+        });
+    }
 
     const createHowlControl = (source: AudioBufferSourceNode) => ({
         stop: () => source.stop(),
@@ -225,8 +234,6 @@ export function useSyncPlayer() {
             await syncClock(true);
             return getCurrentPosition(payload.track.start_at, payload.track.song.duration);
         },
-        preload: async (_: string) => {
-            // Предзагрузка не требуется для Web Audio API
-        },
+        preloadSong: preload,
     };
 }

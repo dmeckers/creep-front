@@ -22,7 +22,7 @@ const stationName = params.stationName as string;
 
 const { listen, unlisten } = useWs();
 const { current: currentTrack } = useStationQueue({ stationName });
-const { play, stop, syncNow } = useSyncPlayer();
+const { play, stop, syncNow , preloadSong } = useSyncPlayer();
 
 const isGettingFirstSong = ref(true);
 const isPlaying = ref(false);
@@ -102,6 +102,7 @@ onMounted(async () => {
   nowPlaying.value = current;
 
   fetchData();
+  preloadSong(current.song.code);
 
   listen(
     "station." + stationName.trim(),
